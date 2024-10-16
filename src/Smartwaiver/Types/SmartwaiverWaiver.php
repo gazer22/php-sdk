@@ -248,6 +248,8 @@ class SmartwaiverWaiver extends SmartwaiverType
      */
     public $pdf;
 
+    public $input;
+
     /**
      * Create a SmartwaiverWaiver object by providing an array with all the
      * required keys. See REQUIRED_KEYS for that information.
