@@ -55,6 +55,11 @@ class Smartwaiver
     protected $client;
 
     /**
+     * @var string The API key for this account
+     */
+    protected $apiKey;
+
+    /**
      * @var SmartwaiverResponse|null The last response from the API server
      */
     protected $lastResponse = null;
@@ -67,6 +72,8 @@ class Smartwaiver
      */
     public function __construct($apiKey, $guzzleOptions = [])
     {
+        $this->apiKey = $apiKey;
+
         // Add passed in Guzzle options
         $options = array_merge(
             [
@@ -684,7 +691,8 @@ class Smartwaiver
     public function processDynamicTemplate($transactionId)
     {
         // Send the request and process the response
-        $this->sendPostRequest(SmartwaiverRoutes::processDynamicTemplate($transactionId), []);
+        // The dynamic/process endpoint requires Authorization: Bearer
+        $this->sendPostRequest(SmartwaiverRoutes::processDynamicTemplate($transactionId), [], ['headers' => ['Authorization' => 'Bearer ' . $this->apiKey]]);
 
         try
         {
@@ -995,7 +1003,8 @@ class Smartwaiver
     public function processDynamicTemplateRaw($transactionId)
     {
         // Send the request and return the response
-        return $this->sendRawPostRequest(SmartwaiverRoutes::processDynamicTemplate($transactionId), []);
+        // The dynamic/process endpoint requires Authorization: Bearer
+        return $this->sendRawPostRequest(SmartwaiverRoutes::processDynamicTemplate($transactionId), [], ['headers' => ['Authorization' => 'Bearer ' . $this->apiKey]]);
     }
 
     /**
@@ -1048,11 +1057,11 @@ class Smartwaiver
      *
      * @throws SmartwaiverSDKException
      */
-    private function sendPostRequest($url, $data)
+    private function sendPostRequest($url, $data, $extraOptions = [])
     {
         // Send the request and process the response
         try {
-            $guzzleResponse = $this->client->request('POST', $url, ['json' => $data]);
+            $guzzleResponse = $this->client->request('POST', $url, array_merge(['json' => $data], $extraOptions));
         } catch (GuzzleException $e) {
             throw new SmartwaiverSDKException(
                 null,
@@ -1076,11 +1085,11 @@ class Smartwaiver
      *
      * @throws SmartwaiverSDKException
      */
-    private function sendRawPostRequest($url, $data)
+    private function sendRawPostRequest($url, $data, $extraOptions = [])
     {
         // Send the request and process the response
         try {
-            $guzzleResponse = $this->client->request('POST', $url, ['json' => $data]);
+            $guzzleResponse = $this->client->request('POST', $url, array_merge(['json' => $data], $extraOptions));
         } catch (GuzzleException $e) {
             throw new SmartwaiverSDKException(
                 null,
