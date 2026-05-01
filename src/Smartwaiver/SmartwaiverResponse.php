@@ -95,6 +95,13 @@ class SmartwaiverResponse
      */
     private $guzzleResponse;
 
+	/**
+	 * The body of the Guzzle response as a string, saved here because the body is a stream that cannot be re-read after it is read once in the constructor
+	 *
+	 * @var string
+	 */
+	private $guzzleBody;
+
     /**
      * Parses all responses from the server and throws an exception if any error occurred.
      *
